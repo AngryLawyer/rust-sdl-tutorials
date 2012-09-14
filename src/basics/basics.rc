@@ -1,0 +1,11 @@
+#[link(name = "basics",
+       vers = "0.1",
+       uuid = "sdltest",
+       url = "http://www.angry-lawyer.com/")];
+
+#[comment = "SDL Tutorials - Basics"];
+#[license = "MIT"];
+
+use std;
+
+//mod basics;
