@@ -1,7 +1,7 @@
 use sdl;
 
 struct Engine {
-    running:bool 
+    mut running:bool 
 }
 
 impl Engine {
@@ -11,7 +11,16 @@ impl Engine {
         }
 
         while (self.running) {
-
+            let mut polling = true;
+            while polling {
+                sdl::event::poll_event(|event| {
+                    match event {
+                        sdl::event::QuitEvent => { self.running = false; }
+                        sdl::event::NoEvent => { polling = false; }
+                        _ => {}
+                    }
+                })
+            }
             self.on_loop();
             self.on_render();
         }
