@@ -1,11 +1,10 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Bash script will eventually be replaced with a make file
 
 TARGET=$1
 
 # Check we need a library??
 cd rust-sdl
-    git pull
     ./configure
     make
     RESULT=$?
@@ -31,6 +30,18 @@ mv rust-sdl/*.so libs
 
 # Check what project we want to build, or all of them
 # Hack it for now
-cd src/$TARGET
-    ./build.sh
-cd -
+if [ $TARGET ]; then
+    cd src/$TARGET
+        ./build.sh
+    cd -
+else
+    DIRS=$(find src -maxdepth 1 -type d )
+    for DIR in $DIRS; do
+        if [ ! $DIR == 'src' ]; then
+            cd $DIR
+            echo "Building $DIR..."
+            ./build.sh
+            cd -
+        fi
+    done
+fi
