@@ -1,4 +1,4 @@
-use sdl;
+extern mod sdl;
 
 struct Engine {
     mut running: bool,
