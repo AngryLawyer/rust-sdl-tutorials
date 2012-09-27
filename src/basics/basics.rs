@@ -72,10 +72,9 @@ fn Engine() -> result::Result<Engine, ~str> {
 }
 
 fn main() {
-    let maybe_engine = Engine();
-    if result::is_ok(maybe_engine) {
-        result::unwrap(maybe_engine).on_execute();
-    } else {
-        io::println(result::unwrap_err(maybe_engine));
-    }
+    match move Engine() {
+        result::Ok(move engine) => engine.on_execute(),
+        result::Err(move message) => io::println(message)
+    };
+
 }
