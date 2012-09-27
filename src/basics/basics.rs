@@ -72,9 +72,12 @@ fn Engine() -> result::Result<Engine, ~str> {
 }
 
 fn main() {
-    match move Engine() {
-        result::Ok(move engine) => engine.on_execute(),
-        result::Err(move message) => io::println(message)
+    match Engine() {
+        result::Ok(engine) => engine.on_execute(),
+        result::Err(message) => {
+            io::println(message);
+            -1
+        }
     };
 
 }
