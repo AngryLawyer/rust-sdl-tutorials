@@ -1,4 +1,6 @@
+extern mod std;
 extern mod sdl;
+use mod sdl::video;
 
 struct Engine {
     mut running: bool,
@@ -6,7 +8,7 @@ struct Engine {
 }
 
 impl Engine {
-    fn on_execute() -> int {
+    fn on_execute() {
 
         while (self.running) {
             //Handle the event poll 
@@ -25,7 +27,6 @@ impl Engine {
         }
 
         self.on_cleanup();
-        return 0;
     }
 
     /*
@@ -76,7 +77,6 @@ fn main() {
         result::Ok(engine) => engine.on_execute(),
         result::Err(message) => {
             io::println(message);
-            -1
         }
     };
 
