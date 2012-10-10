@@ -1,0 +1,114 @@
+<p>
+    <a href="http://rust-lang.org" target="_blank">Rust</a> is a wonderful little in-development low-level programming language, designed for fun and awesome. It's still very young, and under some very rapid development, so at the time of writing it's a bit early to use for anything really serious, but once 1.0 is eventually released it's going to be fantastic.
+</p>
+<p>
+    Rust's key aims are safety, concurrency, and speed. 
+    <ul>
+        <li>It compiles to native code</li>
+        <li>It allows for multiple methods of handling memory - on the stack and on various heaps, avoiding garbage collection for those who worry about GC pausing</li>
+        <li>Actor pattern</li>
+        <li>makes it very hard to get nulls (preferring wrapping results that might be empty in an Option), and [STUFF]</li>
+        <li></li>
+    </ul>
+</p>
+<p>
+    In this series of tutorials, we're going to look at playing with Rust, alongside SDL, as everyone knows learning a language is more fun when you can make stuff explode on-screen.
+</p>
+<p>
+    Our initial reference point is <a href="http://www.sdltutorials.com/sdl-tutorial-basics" target="_blank" title="SDL Tutorials">sdltutorials.com</a>'s tutorials, as it should ease us in nice and gently.
+</p>
+<h2>Getting the environment set up</h2>
+<p>
+    First things first, you're going to need to install Rust. At the moment, due to the fast rate of change in the language, you'll need the one in the <a href="https://github.com/mozilla/rust" target="_blank" title="Rust Source Code">Master branch on GitHub</a>. Clone it, and build it, following their instructions.
+</p>
+<p>
+    Second, you'll need the Rust SDL libraries, and also SDL installed on your machine. Installing SDL is beyond the scope of this tutorial (check your package manager in Linux, if you're using it), but the Rust SDL package can be <a href="https://github.com/brson/rust-sdl" target="_blank" title="Rust SDL Source Code">downloaded also from GitHub</a>. To build it, simply navigate into the root and run Make. Check it worked by running Make Check. You should now have either a .so file, or a .dll, depending on your platform. That's the guy you're going to link against.
+</p>
+<p>
+    Rust currently changes alot. If this code suddenly stops compiling, drop a note in the comments and I'll update it.
+</p>
+<h2>Writing some code</h2>
+<pre>
+extern mod std;
+extern mod sdl;
+
+struct Engine {
+    mut running: bool,
+    mut surface: *sdl::video::Surface
+}
+
+impl Engine {
+    fn on_execute() {
+
+        while (self.running) {
+            //Handle the event poll 
+            let mut polling = true;
+            while polling {
+                sdl::event::poll_event(|event| {
+                    match event {
+                        sdl::event::QuitEvent => { self.running = false; }
+                        sdl::event::NoEvent => { polling = false; }
+                        _ => {}
+                    }
+                });
+            }
+            self.on_loop();
+            self.on_render();
+        }
+
+        self.on_cleanup();
+    }
+
+    /*
+     * Handles game logic, which is nothing at the moment
+     */
+    fn on_loop() {
+    }
+
+    /*
+     * Handles rendering logic, which is also nothing!
+     */
+    fn on_render() {
+    }
+
+    /*
+     * It's always good practice to release all the things we've aquired
+     * before quitting out
+     */
+    fn on_cleanup() {
+        sdl::video::free_surface(self.surface);
+        sdl::quit();
+    }
+}
+
+/*
+ * Construct our Engine, and fill it with the surface we're going to need
+ */
+fn Engine() -> result::Result<Engine, ~str> {
+
+    if sdl::init(~[sdl::InitVideo]) < 0 {
+        return result::Err(#fmt("Unable to initialize SDL: %s", sdl::get_error()));
+    }
+
+    let surface = sdl::video::set_video_mode(640, 480, 31, ~[sdl::video::HWSurface], ~[sdl::video::DoubleBuf]);
+
+    if surface == ptr::null() {
+        return result::Err(#fmt("Unable to create surface: %s", sdl::get_error()));
+    }
+
+    return result::Ok(Engine {
+        running: true,
+        surface: surface
+    });
+}
+
+fn main() {
+    match Engine() {
+        result::Ok(engine) => engine.on_execute(),
+        result::Err(message) => {
+            io::println(message);
+        }
+    };
+
+}
+</pre>

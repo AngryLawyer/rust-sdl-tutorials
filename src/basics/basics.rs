@@ -1,6 +1,5 @@
 extern mod std;
 extern mod sdl;
-use mod sdl::video;
 
 struct Engine {
     mut running: bool,
