@@ -4,10 +4,10 @@
 <p>
     Rust's key aims are safety, concurrency, and speed. 
     <ul>
-        <li>It compiles to native code</li>
-        <li>It allows for multiple methods of handling memory - on the stack and on various heaps, avoiding garbage collection for those who worry about GC pausing</li>
-        <li>Actor pattern</li>
-        <li>makes it very hard to get nulls (preferring wrapping results that might be empty in an Option), and [STUFF]</li>
+        <li>[It compiles to native code]</li>
+        <li>[It allows for multiple methods of handling memory - on the stack and on various heaps, avoiding garbage collection for those who worry about GC pausing]</li>
+        <li>[Actor pattern]</li>
+        <li>[makes it very hard to get nulls (preferring wrapping results that might be empty in an Option), and [STUFF]]</li>
         <li></li>
     </ul>
 </p>
@@ -28,6 +28,50 @@
     Rust currently changes alot. If this code suddenly stops compiling, drop a note in the comments and I'll update it.
 </p>
 <h2>Writing some code</h2>
+<p>First things first, let's stub out the minimum stuff we need to be able to check everything is compiling and happy. Make a folder for your project, and inside it, create the following directory structure</p>
+<ul>
+    <li>bin</li>
+    <li>libs</li>
+    <li>src</li>
+</ul>
+<p>
+    Copy into <strong>libs</strong> your SO or DLL file. Make a new file called <strong>basics.rs</strong> - this is where we're going to put the code. Into this file, type the following -
+</p>
+<pre>
+extern mod std;
+extern mod sdl;
+
+fn main() -> {
+    io::println("Hello world!\n");
+}
+</pre>
+<p>
+    Once that's done, it's time to compile. On the command line, navigate to the root directory, and type the following.
+</p>
+<pre>
+rustc -L libs -o bin/basics src/basics.rs
+</pre>
+<p>
+    That should compile. After that, run the program that now lives in bin, and you should get a Hello world! Congratulations. Everything's set up for playing with SDL. You might want to stick that command into a script for ease of use.
+</p>
+<p>
+    Before we continue, though, let's look at what we've actually done in the code.
+</p>
+<pre>
+extern mod std;
+extern mod stl;
+</pre>
+<p>
+    So, this code is for linking against libraries. Here, we're pulling against std - which contains a lot of useful packages - and stl - the library we linked with -L.
+</p>
+<pre>
+    fn main() -> {
+        io::println("Hello world!\n");
+    }
+</pre>
+<p>
+    This is a function definition that returns nothing, much like any other C-family language you've worked with. <strong>io::println</strong> is going to call the println function that lives in the io module, which was linked against in std.
+</p>
 <pre>
 extern mod std;
 extern mod sdl;
