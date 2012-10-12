@@ -72,6 +72,38 @@ extern mod stl;
 <p>
     This is a function definition that returns nothing, much like any other C-family language you've worked with. <strong>io::println</strong> is going to call the println function that lives in the io module, which was linked against in std.
 </p>
+<p>
+    So, let's get going. We're going to start with a near-empty struct with associated constructor. Add the following, underneath the extern links.
+</p>
+<pre>
+struct Engine {
+    mut running: bool,
+    mut surface: *sdl::video::Surface
+}
+
+impl Engine {
+    fn on_execute() {
+    }
+}
+
+fn Engine() -> result::Result<Engine, ~str> {
+    return result::Err("Not implemented");
+}
+</pre>
+<p>
+    And change Main to read as the following
+</p> 
+<pre>
+fn main() {
+    match Engine() {
+        result::Ok(engine) => engine.on_execute(),
+        result::Err(message) => {
+            io::println(message);
+        }
+    };
+
+}
+</pre>
 <pre>
 extern mod std;
 extern mod sdl;
