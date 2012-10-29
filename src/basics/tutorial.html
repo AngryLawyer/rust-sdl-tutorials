@@ -109,6 +109,75 @@ fn main() {
 <p>
     As we've not got as far as actually creating the engine, we're always returning a 'Not implemented' message. Now how do we deal with this weird type we're returning? Well, the best way is to us another of Rust's awesome features - pattern matching. Using the <strong>match</strong> keyword, when we call the constructing function, we then immediately pass it into something similar to the Switch statement of many C-like languages - except loads more powerful. We're actually checking for the shape of what's being matched, to get the engine out, or the string, straight from the Result. The compiler complains if the match isn't exhaustive, so you have to do something with the result, meaning less chances of missing an edge case.
 </p>
+<p>So, let's actually do something useful now, and populate our constructor. Change it to read as such:</p>
+<pre>
+fn Engine() -> result::Result<Engine, ~str> {
+
+    if sdl::init(~[sdl::InitVideo]) < 0 {
+        return result::Err(#fmt("Unable to initialize SDL: %s", sdl::get_error()));
+    }
+
+    let surface = sdl::video::set_video_mode(640, 480, 31, ~[sdl::video::HWSurface], ~[sdl::video::DoubleBuf]);
+
+    if surface == ptr::null() {
+        return result::Err(#fmt("Unable to create surface: %s", sdl::get_error()));
+    }
+
+    return result::Ok(Engine {
+        running: true,
+        surface: surface
+    });
+}
+</pre>
+<p>Now, we're actually doing something with SDL here. We're trying to Init SDL itself, and returning the Err type if it goes wrong. We then try to initialise a 640x480, hardware rendered, double-buffered surface. Now, here it gets a bit harbl - as the SDL functions are a somewhat thin wrapper around the C functions, this can actually return a null pointer. We need to manually check for null pointer-ness, and return an error if so. This may change in a later version of the library. Finally, we actually create an Enginem stick it in an OK, and fill it up with our surface. Simple.</p>
+<p>The very last thing we need to do is actually have some sort of program loop. Update the impl of Engine to read as such:
+</p>
+<pre>
+impl Engine {
+    fn on_execute() {
+
+        while (self.running) {
+            //Handle the event poll 
+            let mut polling = true;
+            while polling {
+                sdl::event::poll_event(|event| {
+                    match event {
+                        sdl::event::QuitEvent => { self.running = false; }
+                        sdl::event::NoEvent => { polling = false; }
+                        _ => {}
+                    }
+                });
+            }
+            self.on_loop();
+            self.on_render();
+        }
+
+        self.on_cleanup();
+    }
+
+    /*
+     * Handles game logic, which is nothing at the moment
+     */
+    fn on_loop() {
+    }
+
+    /*
+     * Handles rendering logic, which is also nothing!
+     */
+    fn on_render() {
+    }
+
+    /*
+     * It's always good practice to release all the things we've aquired
+     * before quitting out
+     */
+    fn on_cleanup() {
+        sdl::video::free_surface(self.surface);
+        sdl::quit();
+    }
+}
+</pre>
+<p>So, what have we done now? </p>
 <pre>
 extern mod std;
 extern mod sdl;
