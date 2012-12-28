@@ -3,12 +3,16 @@ extern mod sdl;
 
 struct Engine {
     mut running: bool,
-    mut surface: *sdl::video::Surface
+    surface: ~sdl::video::Surface,
+
+    drop {
+        sdl::sdl::quit();
+    }
 }
 
 impl Engine {
     fn on_execute() {
-
+        
         while (self.running) {
             //Handle the event poll 
             let mut polling = true;
@@ -21,11 +25,7 @@ impl Engine {
                     }
                 });
             }
-            self.on_loop();
-            self.on_render();
         }
-
-        self.on_cleanup();
     }
 
     /*
@@ -34,19 +34,7 @@ impl Engine {
     fn on_loop() {
     }
 
-    /*
-     * Handles rendering logic, which is also nothing!
-     */
     fn on_render() {
-    }
-
-    /*
-     * It's always good practice to release all the things we've aquired
-     * before quitting out
-     */
-    fn on_cleanup() {
-        sdl::video::free_surface(self.surface);
-        sdl::quit();
     }
 }
 
@@ -55,20 +43,23 @@ impl Engine {
  */
 fn Engine() -> result::Result<Engine, ~str> {
 
-    if sdl::init(~[sdl::InitVideo]) < 0 {
-        return result::Err(#fmt("Unable to initialize SDL: %s", sdl::get_error()));
+    if sdl::sdl::init(~[sdl::sdl::InitVideo]) == false {
+        return result::Err(fmt!("Unable to initialize SDL: %s", sdl::sdl::get_error()));
     }
 
-    let surface = sdl::video::set_video_mode(640, 480, 31, ~[sdl::video::HWSurface], ~[sdl::video::DoubleBuf]);
+    let maybe_surface = sdl::video::set_video_mode(640, 480, 31, ~[sdl::video::HWSurface], ~[sdl::video::DoubleBuf]);
 
-    if surface == ptr::null() {
-        return result::Err(#fmt("Unable to create surface: %s", sdl::get_error()));
+    match maybe_surface {
+        result::Ok(surface) => {
+            result::Ok(Engine {
+                running: true,
+                surface: surface
+            })
+        },
+        result::Err(message) => {
+            result::Err(fmt!("Unable to create surface: %s", message))
+        }
     }
-
-    return result::Ok(Engine {
-        running: true,
-        surface: surface
-    });
 }
 
 fn main() {
@@ -78,5 +69,4 @@ fn main() {
             io::println(message);
         }
     };
-
 }
