@@ -1,6 +1,8 @@
 extern mod std;
 extern mod sdl;
 
+use sdl;
+
 struct Engine {
     mut running: bool,
     surface: ~sdl::video::Surface,
@@ -17,13 +19,11 @@ impl Engine {
             //Handle the event poll 
             let mut polling = true;
             while polling {
-                sdl::event::poll_event(|event| {
-                    match event {
-                        sdl::event::QuitEvent => { self.running = false; }
-                        sdl::event::NoEvent => { polling = false; }
-                        _ => {}
-                    }
-                });
+                match sdl::event::poll_event() {
+                    sdl::event::QuitEvent => { self.running = false; }
+                    sdl::event::NoEvent => { polling = false; }
+                    _ => {}
+                };
             }
         }
     }
@@ -64,7 +64,10 @@ fn Engine() -> result::Result<Engine, ~str> {
 
 fn main() {
     match Engine() {
-        result::Ok(engine) => engine.on_execute(),
+        result::Ok(engine) => {
+            engine.on_execute();
+            sdl::sdl::quit();
+        },
         result::Err(message) => {
             io::println(message);
         }
