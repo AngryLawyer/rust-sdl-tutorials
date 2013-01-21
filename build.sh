@@ -27,6 +27,8 @@ fi
 rm libs/*
 mv rust-sdl/*.dummy libs
 mv rust-sdl/*.so libs
+mv rust-sdl/*.dylib libs
+mv rust-sdl/*.dll libs
 
 # Check what project we want to build, or all of them
 # Hack it for now
