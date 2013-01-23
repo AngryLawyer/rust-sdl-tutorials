@@ -17,13 +17,11 @@ impl Engine {
                     //Handle the event poll 
                     let mut polling = true;
                     while polling {
-                        sdl::event::poll_event(|event| {
-                            match event {
-                                sdl::event::QuitEvent => { self.running = false; }
-                                sdl::event::NoEvent => { polling = false; }
-                                _ => {}
-                            }
-                        });
+                        match sdl::event::poll_event() {
+                            sdl::event::QuitEvent => { self.running = false; }
+                            sdl::event::NoEvent => { polling = false; }
+                            _ => {}
+                        };
                     }
                     self.on_loop();
                     self.on_render(tilemap);
@@ -137,11 +135,15 @@ fn load_image(filename: ~str) -> result::Result<~sdl::video::Surface, ~str> {
 }
 
 fn main() {
-    match Engine() {
-        result::Ok(engine) => engine.on_execute(),
-        result::Err(message) => {
-            io::println(message);
-        }
-    };
-    sdl::sdl::quit();
+    do sdl::start::start {
+        match Engine() {
+            result::Ok(engine) => {
+                engine.on_execute();
+                sdl::sdl::quit();
+            },
+            result::Err(message) => {
+                io::println(message);
+            }
+        };
+    }
 }

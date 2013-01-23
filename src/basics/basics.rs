@@ -6,10 +6,6 @@ use sdl;
 struct Engine {
     mut running: bool,
     surface: ~sdl::video::Surface,
-
-    drop {
-        sdl::sdl::quit();
-    }
 }
 
 impl Engine {
@@ -63,13 +59,15 @@ fn Engine() -> result::Result<Engine, ~str> {
 }
 
 fn main() {
-    match Engine() {
-        result::Ok(engine) => {
-            engine.on_execute();
-            sdl::sdl::quit();
-        },
-        result::Err(message) => {
-            io::println(message);
-        }
-    };
+    do sdl::start::start {
+        match Engine() {
+            result::Ok(engine) => {
+                engine.on_execute();
+                sdl::sdl::quit();
+            },
+            result::Err(message) => {
+                io::println(message);
+            }
+        };
+    }
 }
