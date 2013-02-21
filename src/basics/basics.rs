@@ -9,7 +9,7 @@ struct Engine {
 }
 
 impl Engine {
-    fn on_execute() {
+    fn on_execute(&self) {
         
         while (self.running) {
             //Handle the event poll 
@@ -27,10 +27,10 @@ impl Engine {
     /*
      * Handles game logic, which is nothing at the moment
      */
-    fn on_loop() {
+    fn on_loop(&self) {
     }
 
-    fn on_render() {
+    fn on_render(&self) {
     }
 }
 
