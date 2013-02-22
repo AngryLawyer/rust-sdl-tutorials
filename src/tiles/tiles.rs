@@ -9,7 +9,7 @@ struct Engine {
 }
 
 impl Engine {
-    fn on_execute() {
+    fn on_execute(&self) {
         
         match self.generate_tile_map(self.image) {
             result::Ok(tilemap) => {
@@ -36,16 +36,16 @@ impl Engine {
     /*
      * Handles game logic, which is nothing at the moment
      */
-    fn on_loop() {
+    fn on_loop(&self) {
     }
 
-    fn on_render(tilemap: &sdl::video::Surface) {
-        self.surface.blit_surface(tilemap);
+    fn on_render(&self, tilemap: &sdl::video::Surface) {
+        self.surface.blit(tilemap);
         self.surface.flip();
     }
 
-    fn generate_tile_map(source: &sdl::video::Surface) -> result::Result<~sdl::video::Surface, ~str> {
-        match sdl::video::create_rgb_surface(~[sdl::video::HWSurface], 640, 480, 32, 0, 0, 0, 0) {
+    fn generate_tile_map(&self, source: &sdl::video::Surface) -> result::Result<~sdl::video::Surface, ~str> {
+        match sdl::video::Surface::new(~[sdl::video::HWSurface], 640, 480, 32, 0, 0, 0, 0) {
             result::Ok(plotter) => {
                 let max_width = 640 / 16;
                 let max_height = 480 / 16;
@@ -59,20 +59,20 @@ impl Engine {
                     let mut y = 0;
 
                     while (y < max_height) {
-                        let source_rect = &{
+                        let source_rect = Some(sdl::Rect {
                             x: (rng.gen_int_range(0, 256/16) as i16) * 16,
                             y: (rng.gen_int_range(0, 128/16) as i16) * 16,
                             w: 16,
                             h: 16,
-                        };
-                        let dest_rect = &{
+                        });
+                        let dest_rect = Some(sdl::Rect {
                             x: x * 16,
                             y: y * 16,
                             w: 16,
                             h: 16,
-                        };
+                        });
 
-                        plotter.blit_surface_rect(source, source_rect, dest_rect);
+                        plotter.blit_rect(source, source_rect, dest_rect);
                         y += 1;
                     }
                     x += 1;
@@ -124,7 +124,7 @@ fn Engine() -> result::Result<Engine, ~str> {
 }
 
 fn load_image(filename: ~str) -> result::Result<~sdl::video::Surface, ~str> {
-    match sdl::video::load_bmp(filename) {
+    match sdl::video::Surface::from_bmp(&path::Path(filename)) {
         result::Ok(image) => {
             image.display_format()
         },

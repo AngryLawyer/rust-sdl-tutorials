@@ -9,7 +9,7 @@ struct Engine {
 }
 
 impl Engine {
-    fn on_execute() {
+    fn on_execute(&self) {
         
         while (self.running) {
             //Handle the event poll 
@@ -29,11 +29,11 @@ impl Engine {
     /*
      * Handles game logic, which is nothing at the moment
      */
-    fn on_loop() {
+    fn on_loop(&self) {
     }
 
-    fn on_render() {
-        self.surface.blit_surface(self.image);
+    fn on_render(&self) {
+        self.surface.blit(self.image);
         self.surface.flip();
     }
 }
@@ -75,7 +75,7 @@ fn Engine() -> result::Result<Engine, ~str> {
 }
 
 fn load_image(filename: ~str) -> result::Result<~sdl::video::Surface, ~str> {
-    match sdl::video::load_bmp(filename) {
+    match sdl::video::Surface::from_bmp(&path::Path(filename)) {
         result::Ok(image) => {
             image.display_format()
         },
